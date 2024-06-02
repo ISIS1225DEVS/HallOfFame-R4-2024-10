@@ -3,7 +3,7 @@
  * Universidad de Los Andes
  *
  *
- * Desarrollado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
+ * Desarrolado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,5 +17,223 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along withthis program.If not, see <http://www.gnu.org/licenses/>.
+ * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
+
+import config as cf
+import model
+import time
+import csv
+import tracemalloc
+
+"""
+El controlador se encarga de mediar entre la vista y el modelo.
+"""
+
+
+def new_controller():
+    """
+    Crea una instancia del modelo
+    """
+    #TODO: Llamar la función del modelo que crea las estructuras de datos
+    control = {'model': None}
+    control['model'] = model.new_data_structs()
+    return control
+
+
+# Funciones para la carga de datos
+
+def load_data(control):
+    """
+    Carga los datos del reto
+    """
+    
+    start_time = get_time()
+    
+    data_structs= control["model"]
+    aeropuertos=load_aeropuertos(data_structs,"airports-2022.csv")
+    vuelos=load_vuelos(data_structs,"fligths-2022.csv")
+
+    end_time = get_time()
+    deltatime = delta_time(start_time, end_time)
+
+    return aeropuertos,vuelos,deltatime
+
+def load_aeropuertos(control, filename):
+    """Cargar aeropuertos"""
+    airfile = cf.data_dir + filename
+    input_file = csv.DictReader(open(airfile, encoding='utf-8'), delimiter= ";")
+    for aerop in input_file:
+        model.add_map_aeropuertos(control,aerop)
+    return model.aeropuerto_size(control)
+
+def load_vuelos(control, filename):
+    """Cargar vuelos"""
+    airfile = cf.data_dir + filename
+    input_file = csv.DictReader(open(airfile, encoding='utf-8'), delimiter= ";")
+    for vuelo in input_file:
+        model.add_map_vuelos(control,vuelo)
+    return model.vuelos_size(control)
+
+def load_terminar_carga_datos(control):
+    start_time = get_time()
+    first_comercial,last_comercial, first_carga,last_carga,first_militar,last_militar,data_structs=model.terminar_carga_datos(control["model"])
+    end_time = get_time()
+    deltatime = delta_time(start_time, end_time)
+    return first_comercial,last_comercial, first_carga,last_carga,first_militar,last_militar,deltatime
+
+    
+
+
+# Funciones de ordenamiento
+
+def sort(control):
+    """
+    Ordena los datos del modelo
+    """
+    #TODO: Llamar la función del modelo para ordenar los datos
+    pass
+
+
+# Funciones de consulta sobre el catálogo
+
+def get_data(control, id):
+    """
+    Retorna un dato por su ID.
+    """
+    #TODO: Llamar la función del modelo para obtener un dato
+    pass
+
+
+def req_1(control,o_latitud,o_longitud,d_latitud,d_longitud):
+    """
+    Retorna el resultado del requerimiento 1
+    """
+    # TODO: Modificar el requerimiento 1
+    start_time = get_time()
+    
+    result,no_airports,time_total,dist_vuelos,o_dist,d_dist= model.req_1(control["model"],o_latitud,o_longitud,d_latitud,d_longitud)
+    
+    end_time = get_time()
+    deltatime = delta_time(start_time, end_time)
+    return result,no_airports,time_total,dist_vuelos,o_dist,d_dist,deltatime
+
+def req_2(control,o_latitud,o_longitud,d_latitud,d_longitud):
+    """
+    Retorna el resultado del requerimiento 2
+    """
+    # TODO: Modificar el requerimiento 2
+    start_time = get_time()
+
+    result,no_airports,time_total,dist_vuelos,o_dist,d_dist= model.req_2(control["model"],o_latitud,o_longitud,d_latitud,d_longitud)
+
+    end_time = get_time()
+    deltatime = delta_time(start_time, end_time)
+    
+    return result,no_airports,time_total,dist_vuelos,o_dist,d_dist,deltatime
+
+
+def req_3(control):
+    """
+    Retorna el resultado del requerimiento 3
+    """
+    # TODO: Modificar el requerimiento 3
+    start = get_time()
+    aerop_mayor_concurrencia, dist_trayectos, trayectos_posibles, encontrados = model.req_3(control["model"])
+    end = get_time()
+    deltatime = delta_time(start, end)
+    return deltatime, aerop_mayor_concurrencia, dist_trayectos, trayectos_posibles, encontrados
+
+
+def req_4(control):
+    """
+    Retorna el resultado del requerimiento 4
+    """
+    # TODO: Modificar el requerimiento 4
+    start_time = get_time()
+
+    results,importante,dist_total,no_trayectos=model.req_4(control["model"])
+
+    end_time = get_time()
+    deltatime = delta_time(start_time, end_time)
+    return results,importante,dist_total,no_trayectos,deltatime
+
+def req_5(control):
+    """
+    Retorna el resultado del requerimiento 5
+    """
+    # TODO: Modificar el requerimiento 5
+    t1 = get_time()
+    max_aereo, concurrencia, dist_total, trayectos, lista = model.req_5(control['model'])
+    t2 = get_time()
+    tiempo = delta_time(t1,t2)
+    return tiempo, max_aereo, concurrencia, dist_total, trayectos, lista
+
+def req_6(control,m):
+    """
+    Retorna el resultado del requerimiento 6
+    """
+    t1=get_time()
+    max_aereo,lista = model.req_6(control['model'],m)
+    t2=get_time()
+    tiempo = delta_time(t1,t2)
+    return tiempo,max_aereo,lista
+
+
+def req_7(control, origen_lat, origen_lon, destino_lat, destino_lon):
+    """
+    Retorna el resultado del requerimiento 7
+    """
+    # TODO: Modificar el requerimiento 7
+    start = get_time()
+    distancia, tiempo, num_aerop_camino, camino_final, error_str, success, origen, destino = model.req_7(control["model"], origen_lat, origen_lon, destino_lat, destino_lon)
+    end = get_time()
+    deltatime = delta_time(start, end)
+    return deltatime, distancia, tiempo, num_aerop_camino, camino_final, error_str, success, origen, destino
+
+
+def req_8(control):
+    """
+    Retorna el resultado del requerimiento 8
+    """
+    # TODO: Modificar el requerimiento 8
+    pass
+
+
+# Funciones para medir tiempos de ejecucion
+
+def get_time():
+    """
+    devuelve el instante tiempo de procesamiento en milisegundos
+    """
+    return float(time.perf_counter()*1000)
+
+
+def delta_time(start, end):
+    """
+    devuelve la diferencia entre tiempos de procesamiento muestreados
+    """
+    elapsed = float(end - start)
+    return elapsed
+
+def get_memory():
+    """
+    toma una muestra de la memoria alocada en instante de tiempo
+    """
+    return tracemalloc.take_snapshot()
+
+
+def delta_memory(stop_memory, start_memory):
+    """
+    calcula la diferencia en memoria alocada del programa entre dos
+    instantes de tiempo y devuelve el resultado en bytes (ej.: 2100.0 B)
+    """
+    memory_diff = stop_memory.compare_to(start_memory, "filename")
+    delta_memory = 0.0
+
+    # suma de las diferencias en uso de memoria
+    for stat in memory_diff:
+        delta_memory = delta_memory + stat.size_diff
+    # de Byte -> kByte
+    delta_memory = delta_memory/1024.0
+    return delta_memory
